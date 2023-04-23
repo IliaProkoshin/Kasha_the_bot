@@ -120,6 +120,10 @@ bot_names = ["!аркадий", "!аркаша", "!каша", "!кашка", "!a
              "!кашандра", "!арка", "!аркашня", "!арканя", "!аркан",
              "!аркашенко", "!аркашноб", "!аркашноид", "!арканоид", "!аркашмили",
              "!кашуля", "!аркадиллер", "!аркадилер"]
+boofer_list = []
+for x in bot_names:
+    boofer_list.append(x.lstrip("!"))
+bot_names += boofer_list
 remove_id_names = ["стереть", "сотри", "удали", "удалить", "забыть", "забудь",
                    "вычеркни", "вычеркнуть"]
 user_self_names = ["я", "меня", "мне"]
@@ -150,7 +154,7 @@ stop_work_words = ["выключись", "выключить", "спи", "усн
                    "отключись", "отдохни", "выключитесь", "спите", "усните",
                    "засните", "отключитесь", "отдохните", "вырубись",
                    "вырубитесь", "оффнись", "оффнитесь", "off", "выкл",
-                   "офф", "спать", "выключи", "офнись"]
+                   "офф", "спать", "выключи", "офнись", "оффнись"]
 get_clock_words = ["счёт", "отсчёт", "таймер", "осталось"]
 subjects = [("математика", "матека", "матика", "матеша", "база", "профиль"),
             ("география", "географ", "гео"),
@@ -469,10 +473,236 @@ for event in connection.listen():  # Главный цикл программы
                 chat_id=chat_id,
                 message=text,
                 random_id=id_to_send)
+        else:
+            if msg_id not in list_of_id:
+                text = get_start_text()
+                open_file = open(path_to_id, "a")
+                string_to_write = f"{msg_id}\n"
+                open_file.write(string_to_write)
+                open_file.close()
+                list_of_id.append(msg_id)
+            elif (len(splitted_text) >= 1 and
+                      cleaner(splitted_text[0].lower()) == "паровозов"):
+                text = "Чух-чуууух!"
+            elif (len(splitted_text) >= 1 and
+                    cleaner(splitted_text[0].lower()) in prepare_words):
+                text = "\n".join(prepare)
+            elif (len(splitted_text) >= 1 and
+                    cleaner(splitted_text[0].lower()) in coin_words):
+                text = coin_dropper.drop()
+            elif (len(splitted_text) >= 4
+                    and cleaner(splitted_text[0].lower()) in dates_names
+                    and cleaner(splitted_text[1].lower()) in ege_marks):
+                if (splitted_text[2] in dates
+                        and splitted_text[3] in stages):
+                    n_data = cleaner(splitted_text[2])
+                    n_stage = cleaner(splitted_text[3].lower())
+                    n_stage = n_stage[0].upper() + n_stage[1:]
+                    n_path = f"data/text/dates/{n_data}/{n_stage}.txt"
+                    text = (f"Даты ЕГЭ в {n_data} году в "
+                            + f"{n_stage} период:\n")
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer
+                else:
+                    text = ("Ошибка. Укажите корректные год "
+                            + "и период через пробел!")
+            elif (len(splitted_text) >= 3
+                    and cleaner(splitted_text[0].lower()) in dates_names
+                    and cleaner(splitted_text[1].lower()) in ege_marks):
+                if cleaner(splitted_text[2].lower()) in dates:
+                    n_data = cleaner(splitted_text[2].lower())
+                    text = (f"Даты ЕГЭ в {n_data} году\n\n")
+                    text += "Досрочный период:\n***\n"
+                    n_path = f"data/text/dates/{n_data}/Досрочный.txt"
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer
+                    text += "\n***\nОсновной период:\n"
+                    n_path = f"data/text/dates/{n_data}/Основной.txt"
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer
+                    text += "\n***\nДополнительный период:\n"
+                    n_path = f"data/text/dates/{n_data}/Дополнительный.txt"
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer + "\n***"
+                else:
+                    text = ("Ошибка. Укажите корректный год "
+                            + "(2013-2023 включительно)!")
+            elif (len(splitted_text) >= 3
+                    and cleaner(splitted_text[0].lower()) in dates_names):
+                if (cleaner(splitted_text[1].lower()) in dates
+                        and cleaner(splitted_text[2].lower()) in stages):
+                    n_data = cleaner(splitted_text[1].lower())
+                    n_stage = cleaner(splitted_text[2].lower())
+                    n_stage = n_stage[0].upper() + n_stage[1:]
+                    n_path = f"data/text/dates/{n_data}/{n_stage}.txt"
+                    text = (f"Даты ЕГЭ в {n_data} году в " +
+                            f"{n_stage} период:\n")
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer
+                else:
+                    text = ("Ошибка. Укажите корректные год " +
+                            "и период через пробел!")
+            elif (len(splitted_text) >= 2 and
+                    cleaner(splitted_text[0].lower()) in dates_names):
+                if cleaner(splitted_text[1].lower()) in dates:
+                    n_data = cleaner(splitted_text[1].lower())
+                    text = (f"Даты ЕГЭ в {n_data} году\n\n")
+                    text += "Досрочный период:\n***\n"
+                    n_path = f"data/text/dates/{n_data}/Досрочный.txt"
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer
+                    text += "\n***\nОсновной период:\n"
+                    n_path = f"data/text/dates/{n_data}/Основной.txt"
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer
+                    text += "\n***\nДополнительный период:\n"
+                    n_path = f"data/text/dates/{n_data}/Дополнительный.txt"
+                    boofer = "".join(open(n_path, "r",
+                                            encoding='utf-8').readlines())
+                    text += boofer + "\n***"
+                else:
+                    text = ("Ошибка. Укажите корректный год "
+                            + "(2013-2023 включительно)!")
+            elif (len(splitted_text) >= 2 and
+                    cleaner(splitted_text[0].lower()) in remove_id_names):
+                if cleaner(splitted_text[1].lower()) in user_self_names:
+                    file = open(path_to_id, "w")
+                    boofer = []
+                    for ID in list_of_id:
+                        if ID != msg_id:
+                            file.write(f"{ID}\n")
+                            boofer.append(ID)
+                        list_of_id = []
+                        for element in boofer:
+                            list_of_id.append(element)
+                        file.close()
+                    text = f"Пользователь {msg_id} успешно забыт!"
+                elif cleaner(splitted_text[1].lower()) in user_all_names:
+                    if msg_id == admin_id:
+                        file = open(path_to_id, "w")
+                        file.write("")
+                        file.close()
+                        list_of_id = []
+                        text = "Все id пользователей забыты успешно!"
+                    else:
+                        text = "Вы не администратор!"
+                else:
+                    text = "Не смог обработать запрос. Попробуйте снова."
+            elif (len(splitted_text) >= 1
+                    and cleaner(splitted_text[0].lower()) in say_hello):
+                text = get_random_hello(msg_id)
+            elif (len(splitted_text) >= 2
+                    and cleaner(splitted_text[1].lower()) in bad_words
+                    and cleaner(splitted_text[0].lower()) in you_mark):
+                text = "Как Вам не стыдно обижать бота?("
+            elif (len(splitted_text) >= 1
+                    and cleaner(splitted_text[0].lower()) in bad_words):
+                text = "Как Вам не стыдно обижать бота?("
+            elif (len(splitted_text) >= 1 and
+                    cleaner(splitted_text[0].lower()) in help_command_names):
+                text = ("Вот список всех доступных на " +
+                        f"данный момент команд:\n{command_link}")
+            elif (len(splitted_text) >= 1
+                    and cleaner(splitted_text[0].lower()) in motivate_words):
+                text = get_motivation()
+            elif (len(splitted_text) >= 1
+                    and cleaner(splitted_text[0].lower()) in panic_words):
+                text = get_panic
+            elif (len(splitted_text) >= 1
+                    and cleaner(splitted_text[0].lower()) in stop_work_words):
+                if msg_id == admin_id:
+                    text = "Прекращаю работу. До свидания!"
+                    id_to_send = randint(0, 2 ** 64)
+                    vk.messages.send(
+                        chat_id=chat_id,
+                        message=text,
+                        random_id=id_to_send)
+                    sleep(1)
+                    break
+                else:
+                    text = "Вы не администратор!"
+            elif (len(splitted_text) >= 2
+                    and cleaner(splitted_text[0].lower()) in get_clock_words):
+                now_day = dt.datetime.today()
+                n_subj = "None"
+                delta = None
+                if cleaner(splitted_text[1].lower()) in subjects[0]:
+                    delta = (day_maths - now_day).days
+                    day = days(delta)
+                    n_subj = "базовой и профильной математике"
+                elif cleaner(splitted_text[1].lower()) in subjects[1]:
+                    delta = (day_geo - now_day).days
+                    day = days(delta)
+                    n_subj = "географии"
+                elif cleaner(splitted_text[1].lower()) in subjects[2]:
+                    delta = (day_litera - now_day).days
+                    day = days(delta)
+                    n_subj = "литературе"
+                elif cleaner(splitted_text[1].lower()) in subjects[3]:
+                    delta = (day_chem - now_day).days
+                    day = days(delta)
+                    n_subj = "химии"
+                elif cleaner(splitted_text[1].lower()) in subjects[4]:
+                    delta = (day_russian - now_day).days
+                    day = days(delta)
+                    n_subj = "русскому языку"
+                elif cleaner(splitted_text[1].lower()) in subjects[5]:
+                    delta = (day_history - now_day).days
+                    day = days(delta)
+                    n_subj = "истории"
+                elif cleaner(splitted_text[1].lower()) in subjects[6]:
+                    delta = (day_fizik - now_day).days
+                    day = days(delta)
+                    n_subj = "физике"
+                elif cleaner(splitted_text[1].lower()) in subjects[7]:
+                    delta = (day_obs - now_day).days
+                    day = days(delta)
+                    n_subj = "обществознанию"
+                elif cleaner(splitted_text[1].lower()) in subjects[8]:
+                    delta1 = (day_inyaz - now_day).days
+                    delta2 = (day_inyaz_gov_1 - now_day).days
+                    delta3 = (day_inyaz_gov_2 - now_day).days
+                    day1 = days(delta1)
+                    day2 = days(delta2)
+                    day3 = days(delta3)
+                    text = (f"ЕГЭ по иностранным языкам пройдёт через " +
+                            f"{delta1} {day1}. До первого срока этапа " +
+                            f"'говорение' остаётся {delta2} {day2}, до " +
+                            f"второго - {delta3} {day3}.")
+                elif cleaner(splitted_text[1].lower()) in subjects[9]:
+                    delta1 = (day_info_1 - now_day).days
+                    delta2 = (day_info_2 - now_day).days
+                    day1 = days(delta1)
+                    day2 = days(delta2)
+                    text = (f"ЕГЭ по информатике пройдёт через " +
+                            f"{delta1} {day1}. До второго срока " +
+                            f"проведения остаётся {delta2} {day2}.")
+                else:
+                    text = "Укажите существующий предмет для сдачи ЕГЭ!"
+                if n_subj != "None":
+                    text = f"ЕГЭ по {n_subj} пройдёт через {delta} {day}."
+            else:
+                text = "Не смог обработать запрос. Попробуйте снова."
+            id_to_send = randint(0, 2 ** 64)
+            log_text = ("Отправлено сообщение с id " +
+                        f"{id_to_send} в чат {chat_id}. Текст:")
+            print(log_text)
+            print(text + "\n")
+            vk.messages.send(
+                chat_id=chat_id,
+                message=text,
+                random_id=id_to_send)
 
     elif event.type == VkBotEventType.GROUP_JOIN:
         joined_user_id = event.obj["user_id"]
-        text = f"Пользователь с id {joined_user_id} присоединился с группе!"
+        text = f"Новый пользователь с id {joined_user_id} присоединился с группе!"
         id_to_send = randint(0, 2 ** 64)
         log_text = ("Отправлено сообщение с id " +
                     f"{id_to_send} в чат {chat_id}. Текст:")
@@ -485,7 +715,7 @@ for event in connection.listen():  # Главный цикл программы
 
     elif event.type == VkBotEventType.GROUP_LEAVE:
         leaved_user_id = event.obj["user_id"]
-        text = f"Пользователь с id {leaved_user_id} покинул группу!("
+        text = f"Новый пользователь с id {leaved_user_id} покинул группу!("
         id_to_send = randint(0, 2 ** 64)
         log_text = ("Отправлено сообщение с id " +
                     f"{id_to_send} в чат {chat_id}. Текст:")
