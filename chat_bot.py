@@ -118,7 +118,8 @@ bot_names = ["!аркадий", "!аркаша", "!каша", "!кашка", "!a
              "!аркашуля", "!кашкандра", "!кашуленька", "!кашак", "!кашакендра",
              "!кашандра", "!арка", "!аркашня", "!арканя", "!аркан",
              "!аркашенко", "!аркашноб", "!аркашноид", "!арканоид", "!аркашмили",
-             "!кашуля", "!аркадиллер", "!аркадилер", "!кош", "!аркашуня"]
+             "!кашуля", "!аркадиллер", "!аркадилер", "!кош", "!аркашуня",
+             "!кашуль"]
 boofer_list = []
 for x in bot_names:
     boofer_list.append(x.lstrip("!"))
@@ -165,7 +166,7 @@ subjects = [("математика", "матека", "матика", "матеш
             ("физика", "физик"),
             ("обществознание", "общество", "общага"),
             ("иностранные", "иностраные", "иностранный", "иностраный", "иняз",
-             "английский", "китайский", "китайский", "немецкий", "француский",
+             "английский", "китайский", "китайский", "немецкий", "французский",
              "инглиш", "англ"),
             ("информатика", "инфа", "ИКТ", "программирование",
              "програмирование", "кодинг", "код")]
@@ -349,20 +350,19 @@ for event in connection.listen():  # Главный цикл программы
                     if cleaner(splitted_text[2].lower()) in user_self_names:
                         file = open(path_to_id, "w")
                         boofer = []
-                        for ID in list_of_id:
-                            if ID != msg_id:
-                                file.write(f"{ID}\n")
-                                boofer.append(ID)
-                            list_of_id = []
-                            for element in boofer:
-                                list_of_id.append(element)
-                            file.close()
+                        with open(path_to_id, "w") as file:
+                            for ID in list_of_id:
+                                if ID != msg_id:
+                                    file.write(f"{ID}\n")
+                                    boofer.append(ID)
+                        list_of_id = []
+                        for element in boofer:
+                            list_of_id.append(element)
                         text = f"Пользователь {msg_id} успешно забыт!"
                     elif cleaner(splitted_text[2].lower()) in user_all_names:
                         if msg_id == admin_id:
-                            file = open(path_to_id, "w")
-                            file.write("")
-                            file.close()
+                            with open(path_to_id, "w") as file:
+                                file.write("")
                             list_of_id = []
                             text = "Все id пользователей забыты успешно!"
                         else:
@@ -575,21 +575,27 @@ for event in connection.listen():  # Главный цикл программы
                 if cleaner(splitted_text[1].lower()) in user_self_names:
                     file = open(path_to_id, "w")
                     boofer = []
-                    for ID in list_of_id:
-                        if ID != msg_id:
-                            file.write(f"{ID}\n")
-                            boofer.append(ID)
+                    try:
+                        for ID in list_of_id:
+                            if ID != msg_id:
+                                file.write(f"{ID}\n")
+                                boofer.append(ID)
                         list_of_id = []
                         for element in boofer:
                             list_of_id.append(element)
                         file.close()
+                    except ValueError:
+                        pass
                     text = f"Пользователь {msg_id} успешно забыт!"
                 elif cleaner(splitted_text[1].lower()) in user_all_names:
                     if msg_id == admin_id:
-                        file = open(path_to_id, "w")
-                        file.write("")
-                        file.close()
-                        list_of_id = []
+                        try:
+                            file = open(path_to_id, "w")
+                            file.write("")
+                            file.close()
+                            list_of_id = []
+                        except ValueError:
+                            pass
                         text = "Все id пользователей забыты успешно!"
                     else:
                         text = "Вы не администратор!"
